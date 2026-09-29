@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#141414">
+<meta name="description" content="个人名片 · 一键拨号与微信联系">
+<title>周禹 · 名片</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141414'/%3E%3Cpath d='M20 44V20h10.5c4.7 0 7.9 2.5 7.9 6.9 0 3-1.7 4.9-4.2 5.7 3.4.7 5.5 3 5.5 6.4 0 4.7-3.3 7.6-8 7.6H20zm5.4-5.2h4.3c2.5 0 4-1.1 4-2.9 0-1.9-1.5-3-4-3h-4.3v5.9zm0-9.3h4c2.2 0 3.6-1 3.6-2.7 0-1.8-1.3-2.7-3.6-2.7h-4v5.4z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --ink:#141414;
+    --paper:#ffffff;
+    --bg:#eef0f1;
+    --line:#e4e6e7;
+    --muted:#70767c;
+    --wechat:#07c160;
+    --wechat-ink:#fff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,-apple-system,sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:24px;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* ===== 名片卡 ===== */
+  .card{
+    background:var(--paper);
+    width:100%;max-width:640px;
+    border-radius:16px;
+    box-shadow:0 1px 2px rgba(0,0,0,.05),0 12px 32px rgba(0,0,0,.08);
+    padding:36px 36px 30px;
+    position:relative;
+  }
+  /* 顶部细线，精密感 */
+  .card::before{
+    content:"";position:absolute;top:0;left:36px;right:36px;height:3px;
+    background:var(--ink);
+    border-radius:0 0 3px 3px;
+  }
+  .grid{
+    display:grid;grid-template-columns:1fr 148px;gap:28px;
+    margin-top:18px;align-items:start;
+  }
+  /* 身份区 */
+  .name{font-size:30px;font-weight:700;letter-spacing:.01em;line-height:1.2}
+  .company{margin-top:8px;font-size:15px;color:var(--muted);line-height:1.5}
+  .company b{color:var(--ink);font-weight:600}
+  /* 联系方式 */
+  .contacts{margin-top:26px;border-top:1px solid var(--line);padding-top:6px}
+  .row{
+    display:flex;align-items:center;gap:12px;
+    padding:13px 0;border-bottom:1px solid var(--line);
+    text-decoration:none;color:inherit;
+  }
+  .row:last-child{border-bottom:none}
+  .row .icon{
+    flex:0 0 36px;width:36px;height:36px;border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .row .icon.tel{background:#141414}
+  .row .icon.wechat{background:var(--wechat)}
+  .row .icon svg{width:19px;height:19px;display:block}
+  .row .meta{flex:1;min-width:0}
+  .row .label{font-size:12px;color:var(--muted)}
+  .row .value{font-size:16px;font-weight:600;margin-top:2px;word-break:break-all}
+  .row .arrow{margin-left:auto;color:var(--muted);font-size:14px;flex:0 0 auto}
+  .row:active{opacity:.7}
+  /* 二维码区 */
+  .qr{text-align:center}
+  .qr-box{
+    width:148px;height:148px;border:1px solid var(--line);border-radius:12px;
+    overflow:hidden;display:flex;align-items:center;justify-content:center;
+    cursor:zoom-in;background:#fff;
+  }
+  .qr-box img{width:100%;height:100%;object-fit:cover;display:block}
+  .qr-placeholder{
+    width:100%;height:100%;display:flex;flex-direction:column;gap:6px;
+    align-items:center;justify-content:center;color:#b6bcc1;
+    background:repeating-linear-gradient(45deg,#f6f7f8 0 10px,#f0f1f2 10px 20px);
+  }
+  .qr-placeholder svg{width:44px;height:44px}
+  .qr-placeholder p{font-size:12px;letter-spacing:.08em}
+  .qr-cap{font-size:12px;color:var(--muted);margin-top:10px}
+  /* 页脚 */
+  .foot{margin-top:28px;text-align:center;font-size:12px;color:var(--muted)}
+  /* ===== 二维码大图灯箱 ===== */
+  .lightbox{
+    position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50;
+    display:none;align-items:center;justify-content:center;padding:32px;
+  }
+  .lightbox.open{display:flex}
+  .lightbox img{
+    max-width:min(420px,88vw);width:100%;background:#fff;border-radius:12px;padding:12px;
+  }
+  .lightbox .hint{
+    position:absolute;bottom:34px;left:0;right:0;text-align:center;
+    color:#fff;font-size:14px;opacity:.85;
+  }
+  @media (max-width:560px){
+    body{padding:14px}
+    .card{padding:28px 22px 24px;border-radius:14px}
+    .card::before{left:22px;right:22px}
+    .grid{grid-template-columns:1fr;gap:22px;margin-top:14px}
+    .qr{display:flex;align-items:center;gap:16px;text-align:left}
+    .qr-box{width:112px;height:112px;flex:0 0 112px}
+    .qr-cap{margin-top:0}
+    .name{font-size:26px}
+    .row .value{font-size:15px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+</head>
+<body>
+
+<main class="card" role="main">
+  <div class="identity">
+    <h1 class="name">周禹</h1>
+    <p class="company"><b>高巨创新 · 重庆</b></p>
+  </div>
+
+  <div class="grid">
+    <section class="contacts" aria-label="联系方式">
+      <a class="row" href="tel:18502310001">
+        <span class="icon tel" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </span>
+        <span class="meta">
+          <span class="label">电话</span>
+          <span class="value">185 0231 0001</span>
+        </span>
+        <span class="arrow">一键拨打</span>
+      </a>
+
+      <!-- 微信加好友：点击查看二维码大图扫码；若后续提供 u.wechat.com 链接可替换 href -->
+      <a class="row" href="#" data-open-lightbox>
+        <span class="icon wechat" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M9.5 4C5.36 4 2 6.69 2 10c0 1.89 1.02 3.56 2.62 4.66l-.62 1.9 2.17-1.06c.7.18 1.44.28 2.22.28h.45a5.6 5.6 0 0 1-.26-1.7C8.58 11.16 11.4 8 15 8h.33C14.28 5.63 12.1 4 9.5 4zM7 7.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm5 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/><path d="M22 13.6c0-2.87-3.13-5.1-7-5.1s-7 2.23-7 5.1 3.13 5.1 7 5.1c.72 0 1.42-.11 2.06-.3l1.88.92-.53-1.63C21.13 16.72 22 15.27 22 13.6zM12.2 11.5a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8zm4.4 0a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8z"/></svg>
+        </span>
+        <span class="meta">
+          <span class="label">微信</span>
+          <span class="value">扫码或点击加好友</span>
+        </span>
+        <span class="arrow">查看二维码</span>
+      </a>
+    </section>
+
+    <aside class="qr">
+      <button type="button" class="qr-box" data-open-lightbox aria-label="放大查看微信二维码">
+        <img src="wechat-qr.png" alt="微信二维码">
+      </button>
+      <p class="qr-cap">微信扫码加好友</p>
+    </aside>
+  </div>
+
+  <p class="foot">名片网页 · 点击电话可直接拨打</p>
+</main>
+
+<!-- 二维码大图灯箱 -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="微信二维码大图">
+  <img id="lightbox-img" src="" alt="微信二维码">
+  <p class="hint">点击任意处关闭 · 用微信「扫一扫」添加好友</p>
+</div>
+
+<script>
+  // 灯箱：放大查看二维码
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lightbox-img');
+  var qrImg = document.querySelector('.qr-box img');
+  document.querySelectorAll('[data-open-lightbox]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      e.preventDefault();
+      var src = qrImg ? qrImg.src : null;
+      if(!src) return; // 二维码图未就位时不做任何事（占位阶段）
+      lbImg.src = src;
+      lb.classList.add('open');
+    });
+  });
+  lb.addEventListener('click', function(){ lb.classList.remove('open'); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') lb.classList.remove('open');
+  });
+</script>
+</body>
+</html>
