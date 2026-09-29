@@ -94,6 +94,14 @@
   }
   .save-btn:active{opacity:.85}
   @media (hover:hover){.save-btn:hover{opacity:.9}}
+  /* 扫码存联系人区块 */
+  .vcard-save{
+    margin-top:20px;display:flex;gap:14px;align-items:center;
+    border-top:1px solid var(--line);padding-top:16px;
+  }
+  .vcard-save img{width:96px;height:96px;flex:0 0 96px;border:1px solid var(--line);border-radius:10px}
+  .vcard-save b{font-size:14px;line-height:1.4}
+  .vcard-save p{margin-top:4px;font-size:13px;color:var(--muted);line-height:1.55}
   /* 页脚 */
   .foot{margin-top:28px;text-align:center;font-size:12px;color:var(--muted)}
   /* ===== 二维码大图灯箱 ===== */
@@ -169,6 +177,14 @@
 
   <button type="button" id="save-contact" class="save-btn">保存到通讯录</button>
 
+  <div class="vcard-save">
+    <img src="vcard-qr.png" alt="联系人二维码">
+    <div class="vcard-save-text">
+      <b>相机扫这个码，直接存联系人</b>
+      <p>用手机自带相机扫一扫左侧二维码，会直接弹出联系人卡片，一键添加，无需下载文件。</p>
+    </div>
+  </div>
+
   <p class="foot">名片网页 · 点击电话可直接拨打</p>
 </main>
 
@@ -179,7 +195,8 @@
 </div>
 
 <script>
-  // 保存到通讯录：生成标准 vCard(.vcf) 文件，手机/电脑打开即导入联系人
+  // 保存到通讯录：优先调起系统分享（手机分享面板可直接选「通讯录/联系人」），
+  // 不支持分享时回退为下载 vCard(.vcf) 文件
   var contactBtn = document.getElementById('save-contact');
   contactBtn.addEventListener('click', function(){
     var vcard = [
@@ -192,14 +209,19 @@
       'NOTE:微信扫码加好友（名片网页 https://ikoozhou.github.io/vcard/）',
       'END:VCARD'
     ].join('\r\n');
-    var blob = new Blob([vcard], {type:'text/vcard;charset=utf-8'});
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = '周禹.vcf';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+    var file = new File([vcard], '周禹.vcf', {type:'text/vcard;charset=utf-8'});
+    if (navigator.canShare && navigator.canShare({files:[file]})) {
+      navigator.share({files:[file], title:'周禹 名片'}).catch(function(){});
+    } else {
+      var blob = new Blob([vcard], {type:'text/vcard;charset=utf-8'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '周禹.vcf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+    }
   });
 
   var lb = document.getElementById('lightbox');
