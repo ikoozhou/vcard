@@ -15,7 +15,6 @@
     --line:#e4e6e7;
     --muted:#70767c;
     --wechat:#07c160;
-    --wechat-ink:#fff;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
@@ -36,7 +35,6 @@
     padding:36px 36px 30px;
     position:relative;
   }
-  /* 顶部细线，精密感 */
   .card::before{
     content:"";position:absolute;top:0;left:36px;right:36px;height:3px;
     background:var(--ink);
@@ -68,63 +66,20 @@
   .row .meta{flex:1;min-width:0}
   .row .label{font-size:12px;color:var(--muted)}
   .row .value{font-size:16px;font-weight:600;margin-top:2px;word-break:break-all}
-  .row .arrow{margin-left:auto;color:var(--muted);font-size:14px;flex:0 0 auto}
-  .row:active{opacity:.7}
-  /* 二维码区 */
+  /* 二维码区：只留二维码 */
   .qr{text-align:center}
-  .qr-box{
-    width:148px;height:148px;border:1px solid var(--line);border-radius:12px;
-    overflow:hidden;display:flex;align-items:center;justify-content:center;
-    cursor:zoom-in;background:#fff;
+  .qr img{
+    width:148px;height:148px;border-radius:12px;
+    border:1px solid var(--line);object-fit:cover;display:block;
   }
-  .qr-box img{width:100%;height:100%;object-fit:cover;display:block}
-  .qr-placeholder{
-    width:100%;height:100%;display:flex;flex-direction:column;gap:6px;
-    align-items:center;justify-content:center;color:#b6bcc1;
-    background:repeating-linear-gradient(45deg,#f6f7f8 0 10px,#f0f1f2 10px 20px);
-  }
-  .qr-placeholder svg{width:44px;height:44px}
-  .qr-placeholder p{font-size:12px;letter-spacing:.08em}
-  .qr-cap{font-size:12px;color:var(--muted);margin-top:10px}
-  /* 保存到通讯录按钮 */
-  .save-btn{
-    margin-top:22px;width:100%;padding:13px;border:none;border-radius:12px;
-    background:var(--ink);color:#fff;font-size:15px;font-weight:600;
-    font-family:inherit;cursor:pointer;letter-spacing:.02em;
-  }
-  .save-btn:active{opacity:.85}
-  @media (hover:hover){.save-btn:hover{opacity:.9}}
-  /* 扫码存联系人区块 */
-  .vcard-save{
-    margin-top:20px;display:flex;gap:14px;align-items:center;
-    border-top:1px solid var(--line);padding-top:16px;
-  }
-  .vcard-save img{width:96px;height:96px;flex:0 0 96px;border:1px solid var(--line);border-radius:10px}
-  .vcard-save b{font-size:14px;line-height:1.4}
-  .vcard-save p{margin-top:4px;font-size:13px;color:var(--muted);line-height:1.55}
   /* 页脚 */
   .foot{margin-top:28px;text-align:center;font-size:12px;color:var(--muted)}
-  /* ===== 二维码大图灯箱 ===== */
-  .lightbox{
-    position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50;
-    display:none;align-items:center;justify-content:center;padding:32px;
-  }
-  .lightbox.open{display:flex}
-  .lightbox img{
-    max-width:min(420px,88vw);width:100%;background:#fff;border-radius:12px;padding:12px;
-  }
-  .lightbox .hint{
-    position:absolute;bottom:34px;left:0;right:0;text-align:center;
-    color:#fff;font-size:14px;opacity:.85;
-  }
   @media (max-width:560px){
     body{padding:14px}
     .card{padding:28px 22px 24px;border-radius:14px}
     .card::before{left:22px;right:22px}
     .grid{grid-template-columns:1fr;gap:22px;margin-top:14px}
-    .qr{display:flex;align-items:center;gap:16px;text-align:left}
-    .qr-box{width:112px;height:112px;flex:0 0 112px}
-    .qr-cap{margin-top:0}
+    .qr img{width:132px;height:132px;margin:0 auto}
     .name{font-size:26px}
     .row .value{font-size:15px}
   }
@@ -151,95 +106,26 @@
           <span class="label">电话</span>
           <span class="value">185 0231 0001</span>
         </span>
-        <span class="arrow">一键拨打</span>
       </a>
 
-      <!-- 微信加好友：点击查看二维码大图扫码；若后续提供 u.wechat.com 链接可替换 href -->
-      <a class="row" href="#" data-open-lightbox>
+      <div class="row">
         <span class="icon wechat" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="#fff"><path d="M9.5 4C5.36 4 2 6.69 2 10c0 1.89 1.02 3.56 2.62 4.66l-.62 1.9 2.17-1.06c.7.18 1.44.28 2.22.28h.45a5.6 5.6 0 0 1-.26-1.7C8.58 11.16 11.4 8 15 8h.33C14.28 5.63 12.1 4 9.5 4zM7 7.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm5 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/><path d="M22 13.6c0-2.87-3.13-5.1-7-5.1s-7 2.23-7 5.1 3.13 5.1 7 5.1c.72 0 1.42-.11 2.06-.3l1.88.92-.53-1.63C21.13 16.72 22 15.27 22 13.6zM12.2 11.5a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8zm4.4 0a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8z"/></svg>
         </span>
         <span class="meta">
           <span class="label">微信</span>
-          <span class="value">扫码或点击加好友</span>
+          <span class="value">扫码加好友</span>
         </span>
-        <span class="arrow">查看二维码</span>
-      </a>
+      </div>
     </section>
 
     <aside class="qr">
-      <button type="button" class="qr-box" data-open-lightbox aria-label="放大查看微信二维码">
-        <img src="wechat-qr.png" alt="微信二维码">
-      </button>
-      <p class="qr-cap">微信扫码加好友</p>
+      <img src="wechat-qr.png" alt="微信二维码">
     </aside>
-  </div>
-
-  <button type="button" id="save-contact" class="save-btn">保存到通讯录</button>
-
-  <div class="vcard-save">
-    <img src="vcard-qr.png" alt="联系人二维码">
-    <div class="vcard-save-text">
-      <b>相机扫这个码，直接存联系人</b>
-      <p>用手机自带相机扫一扫左侧二维码，会直接弹出联系人卡片，一键添加，无需下载文件。</p>
-    </div>
   </div>
 
   <p class="foot">名片网页 · 点击电话可直接拨打</p>
 </main>
 
-<!-- 二维码大图灯箱 -->
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="微信二维码大图">
-  <img id="lightbox-img" src="" alt="微信二维码">
-  <p class="hint">点击任意处关闭 · 用微信「扫一扫」添加好友</p>
-</div>
-
-<script>
-  // 保存到通讯录：优先调起系统分享（手机分享面板可直接选「通讯录/联系人」），
-  // 不支持分享时回退为下载 vCard(.vcf) 文件
-  var contactBtn = document.getElementById('save-contact');
-  contactBtn.addEventListener('click', function(){
-    var vcard = [
-      'BEGIN:VCARD',
-      'VERSION:3.0',
-      'N:周禹;;;;',
-      'FN:周禹',
-      'ORG:高巨创新·重庆',
-      'TEL;TYPE=CELL,VOICE:18502310001',
-      'NOTE:微信扫码加好友（名片网页 https://ikoozhou.github.io/vcard/）',
-      'END:VCARD'
-    ].join('\r\n');
-    var file = new File([vcard], '周禹.vcf', {type:'text/vcard;charset=utf-8'});
-    if (navigator.canShare && navigator.canShare({files:[file]})) {
-      navigator.share({files:[file], title:'周禹 名片'}).catch(function(){});
-    } else {
-      var blob = new Blob([vcard], {type:'text/vcard;charset=utf-8'});
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = '周禹.vcf';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
-    }
-  });
-
-  var lb = document.getElementById('lightbox');
-  var lbImg = document.getElementById('lightbox-img');
-  var qrImg = document.querySelector('.qr-box img');
-  document.querySelectorAll('[data-open-lightbox]').forEach(function(el){
-    el.addEventListener('click', function(e){
-      e.preventDefault();
-      var src = qrImg ? qrImg.src : null;
-      if(!src) return; // 二维码图未就位时不做任何事（占位阶段）
-      lbImg.src = src;
-      lb.classList.add('open');
-    });
-  });
-  lb.addEventListener('click', function(){ lb.classList.remove('open'); });
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape') lb.classList.remove('open');
-  });
-</script>
 </body>
 </html>
